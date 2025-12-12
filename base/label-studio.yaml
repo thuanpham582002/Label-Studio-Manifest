@@ -85,28 +85,47 @@ spec:
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: label-studio-migrate
+  name: label-studio-init
   labels:
-    app: label-studio-migrate
+    app: label-studio-init
 spec:
   template:
     spec:
       containers:
-      - name: migrate
+      - name: init
         image: heartexlabs/label-studio:1.14.0
         imagePullPolicy: IfNotPresent
         command: ["/bin/bash", "-c"]
         args:
           - |
-            python label_studio/core/manage.py migrate
-            python label_studio/core/manage.py collectstatic --noinput
+            echo "Starting Label Studio initialization..."
+            label-studio migrate
+            echo "Migration completed"
+            label-studio collectstatic --noinput
+            echo "Static files collected"
+            # Check if admin user exists, create if not
+            label-studio create-user \
+              --username admin \
+              --email admin@example.com \
+              --password admin \
+              --first-name Admin \
+              --last-name User \
+              || echo "Admin user already exists"
+            echo "Initialization completed successfully"
         envFrom:
         - configMapRef:
             name: label-studio-config
         - secretRef:
             name: label-studio-secrets
+        resources:
+          requests:
+            memory: "512Mi"
+            cpu: "200m"
+          limits:
+            memory: "1Gi"
+            cpu: "500m"
       restartPolicy: OnFailure
-  backoffLimit: 4
+  backoffLimit: 3
 ---
 apiVersion: apps/v1
 kind: Deployment

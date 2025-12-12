@@ -29,7 +29,7 @@ The deployment includes the following components:
 ### Label Studio Application
 - **Main Application**: Web UI and API server
 - **Worker**: Background task processing for data labeling
-- **Migration Job**: Database initialization and migrations
+- **Initialization Job**: Database migration, static files collection, and admin user creation
 
 ### Dependencies
 - **PostgreSQL**: Primary database for storing projects, tasks, and annotations
