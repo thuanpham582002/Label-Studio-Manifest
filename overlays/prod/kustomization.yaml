@@ -1,0 +1,18 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+metadata:
+  name: label-studio-prod
+
+namespace: label-studio-prod
+
+resources:
+  - ../../base
+
+patchesStrategicMerge:
+  - storage-patch.yaml
+  - resources-patch.yaml
+  - replica-patch.yaml
+
+commonLabels:
+  environment: prod
